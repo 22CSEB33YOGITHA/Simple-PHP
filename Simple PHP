@@ -1,0 +1,170 @@
+// 1. Grade conversion
+<?php
+function numericalToLetterGrade($grade) {
+    if ($grade >= 90) {
+        return 'A';
+    } elseif ($grade >= 80) {
+        return 'B';
+    } elseif ($grade >= 70) {
+        return 'C';
+    } elseif ($grade >= 60) {
+        return 'D';
+    } else {
+        return 'F';
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $numerical_grade = $_POST["numerical_grade"];
+    if (!is_numeric($numerical_grade) || $numerical_grade < 0 || $numerical_grade > 100) {
+        echo "Invalid input! Please enter a numerical grade between 0 and 100.";
+    } else {
+        $letter_grade = numericalToLetterGrade($numerical_grade);
+        echo "Your letter grade is: $letter_grade";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grade Converter</title>
+</head>
+<body>
+    <h2>Grade Converter</h2>
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+        Enter your numerical grade (0-100):
+        <input type="text" name="numerical_grade">
+        <input type="submit" value="Convert">
+    </form>
+</body>
+</html>
+
+
+
+// 2. Sum of digits
+<?php
+function sumOfDigits($number) {
+    $sum = 0;
+    while ($number != 0) {
+        $digit = $number % 10;
+        $sum += $digit;
+        $number = (int)($number / 10);
+    }
+
+    return $sum;
+}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $number = $_POST["number"];
+    if (!is_numeric($number) || $number < 0) {
+        echo "Invalid input! Please enter a non-negative number.";
+    } else {
+        $sum = sumOfDigits($number);
+        echo "The sum of digits of $number is: $sum";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sum of Digits Calculator</title>
+</head>
+<body>
+    <h2>Sum of Digits Calculator</h2>
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+        Enter a number:
+        <input type="text" name="number">
+        <input type="submit" value="Calculate Sum">
+    </form>
+</body>
+</html>
+
+
+
+// 3. Vehicle Rental class
+<?php
+
+class Vehicle {
+    public $make;
+    public $model;
+    public $year;
+    public $rentalPrice;
+    public $isRented;
+    public $rentalStartDate;
+
+    public function __construct($make, $model, $year, $rentalPrice) {
+        $this->make = $make;
+        $this->model = $model;
+        $this->year = $year;
+        $this->rentalPrice = $rentalPrice;
+        $this->isRented = false;
+        $this->rentalStartDate = null;
+    }
+
+    public function rent() {
+        if (!$this->isRented) {
+            $this->isRented = true;
+            $this->rentalStartDate = date('Y-m-d');
+            echo "The {$this->year} {$this->make} {$this->model} has been rented.\n";
+        } else {
+            echo "Sorry, the {$this->year} {$this->make} {$this->model} is already rented.\n";
+        }
+    }
+
+    public function returnVehicle($returnDate) {
+        if ($this->isRented) {
+            $this->isRented = false;
+            $endDate = new DateTime($returnDate);
+            $startDate = new DateTime($this->rentalStartDate);
+            $duration = $startDate->diff($endDate)->days + 1;
+            $totalPrice = $duration * $this->rentalPrice;
+            echo "The {$this->year} {$this->make} {$this->model} has been returned.\n";
+            echo "Rental duration: $duration day(s).\n";
+            echo "Total rental fees: $totalPrice\n";
+        } else {
+            echo "The {$this->year} {$this->make} {$this->model} is not currently rented.\n";
+        }
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $make = $_POST["make"];
+    $model = $_POST["model"];
+    $year = $_POST["year"];
+    $rentalPrice = $_POST["rentalPrice"];
+
+    $vehicle = new Vehicle($make, $model, $year, $rentalPrice);
+    $vehicle->rent();
+    $returnDate = $_POST["returnDate"];
+    $vehicle->returnVehicle($returnDate);
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vehicle Rental</title>
+</head>
+<body>
+    <h2>Rent a Vehicle</h2>
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+        <label for="make">Make:</label>
+        <input type="text" id="make" name="make" required><br><br>
+        
+        <label for="model">Model:</label>
+        <input type="text" id="model" name="model" required><br><br>
+        
+        <label for="year">Year:</label>
+        <input type="number" id="year" name="year" required><br><br>
+        
+        <label for="rentalPrice">Rental Price:</label>
+        <input type="number" id="rentalPrice" name="rentalPrice" required><br><br>
+        
+        <label for="returnDate">Return Date:</label>
+        <input type="date" id="returnDate" name="returnDate" required><br><br>
+        
+        <input type="submit" value="Rent">
+    </form>
+</body>
+</html>
